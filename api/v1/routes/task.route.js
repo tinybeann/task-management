@@ -12,4 +12,16 @@ router.get("/", async (req, res) => {
   res.json(tasks);
 });
 
+router.get("/detail/:id", async (req, res) => {
+  const id = req.params.id;
+  
+  const task = await Task.findOne({
+    _id: id,
+    deleted: false
+  });
+
+  console.log(task);
+
+  res.json(task);
+});
 module.exports = router;
