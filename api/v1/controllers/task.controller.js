@@ -8,14 +8,14 @@ module.exports.index = async (req, res) => {
   }
 
   // Filter Status
-  if(req.query.status) {
+  if (req.query.status) {
     find.status = req.query.status;
   }
   // End Filter Status
-  
+
   // Sort
   const sort = {};
-  if(req.query.sortKey && req.query.sortValue) {
+  if (req.query.sortKey && req.query.sortValue) {
     sort[req.query.sortKey] = req.query.sortValue;
   }
   // End Sort
@@ -24,6 +24,13 @@ module.exports.index = async (req, res) => {
   const countTasks = await Task.countDocuments(find);
   const objectPagination = paginationHelper(2, req.query, countTasks);
   // End Pagination
+
+  // Search
+  if (req.query.keyword) {
+    const regex = new RegExp(req.query.keyword, "i");
+    find.title = regex;
+  }
+  // End Search
 
   const tasks = await Task.find(find)
     .sort(sort)
@@ -36,7 +43,7 @@ module.exports.index = async (req, res) => {
 // [GET] /api/v1/tasks/detail/:id
 module.exports.detail = async (req, res) => {
   const id = req.params.id;
-  
+
   const task = await Task.findOne({
     _id: id,
     deleted: false
